@@ -66,6 +66,8 @@ a.btn{background:#15121C;color:#fff;border:2px solid var(--lime);box-shadow:0 0 
 .rule{height:5px;width:90px;border-radius:3px;background:linear-gradient(90deg,var(--acc),var(--lime));margin-top:18px}
 .trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.trust span{font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}.trust b{font-weight:600}
 .foot{margin-top:28px;font-size:13px;color:var(--mute);text-align:center}
+.help{width:26px;height:26px;padding:0;margin-left:8px;border-radius:50%;font:600 15px Outfit,system-ui,sans-serif;line-height:1;background:var(--sel);color:var(--acc);border:1.5px solid var(--acc);vertical-align:middle;cursor:pointer}.hbox{font-size:14px;font-weight:400;background:var(--sel);border-left:4px solid var(--acc);border-radius:10px;padding:10px 12px;margin:0 0 10px}
+.in{width:100%;padding:12px;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px}.in:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </style>
 </head>
 <body>
@@ -94,9 +96,9 @@ const SEC=[
 {k:"pout",l:"Outros reparos e avisos",t:"m",o:[["Câmera trocada",3],["Traseira ou vidro trocado",3],["Face ID / sensores mexidos ou trocados",10],["Reparo em placa (solda, micro-soldagem)",15,1],["Já foi aberto por assistência não autorizada",4],["Aviso de “peça desconhecida” em Ajustes › Geral › Sobre",5]]}]},
 {n:"Garantia e procedência",q:[
 {k:"gar",l:"Garantia Apple",t:"s",o:[["Mais de 6 meses de garantia",0],["AppleCare+ ativo",0],["Até 6 meses de garantia",1],["Fora da garantia",3]]},
-{k:"icl",l:"iCloud, Buscar iPhone e Bloqueio de Ativação",t:"s",o:[["Em uso na conta do cliente (será removido na entrega)",0],["Já removido e aparelho apagado",0],["Vinculado a conta de terceiro, sem acesso",30,1],["Não sei verificar",10]]},
-{k:"op",l:"Operadora e IMEI",t:"s",o:[["Desbloqueado, IMEI regular",0],["Bloqueado por operadora",12,1],["IMEI com restrição (roubo, perda, dívida)",40,1]]},
-{k:"mdm",l:"Gerenciamento remoto (MDM) de empresa ou escola",t:"s",o:[["Sem MDM",0],["Com MDM",20,1]]},
+{k:"icl",l:"iCloud, Buscar iPhone e Bloqueio de Ativação",t:"s",o:[["Em uso na minha conta (será removido na entrega)",0],["Já removido e aparelho apagado",0],["Vinculado a conta de terceiro, sem acesso",30,1],["Não sei verificar",10]]},
+{k:"op",l:"Operadora e IMEI",h:"<b>IMEI</b> é o “CPF” do celular, um número único de 15 dígitos. Para ver o seu, digite *#06# no telefone ou abra Ajustes › Geral › Sobre. O IMEI fica com restrição quando o aparelho foi registrado como roubado ou perdido, ou, em alguns casos, quando há pendência com a operadora. Um aparelho assim pode ficar sem sinal.<br><br><b>Bloqueio de operadora</b> significa que o iPhone só aceita chip de uma operadora específica. Em Ajustes › Geral › Sobre, procure “Bloqueio da operadora”: se aparecer “Sem restrições de SIM”, ele está liberado. Na dúvida, fale com a nossa equipe antes de responder.",t:"s",o:[["Desbloqueado, IMEI regular",0],["Bloqueado por operadora",12,1],["IMEI com restrição (roubo, perda, dívida)",40,1]]},
+{k:"mdm",l:"Gerenciamento remoto (MDM) de empresa ou escola",h:"<b>MDM</b> é um controle remoto instalado por uma empresa ou escola no celular. Com ele, quem administra pode bloquear apps, limitar configurações e até apagar o aparelho à distância. É comum em celular fornecido pelo trabalho ou pela escola.<br><br>Para saber, abra Ajustes › Geral › VPN e Gerenciamento de Dispositivo. Se aparecer um perfil de empresa ou escola, o aparelho tem MDM. Se a opção não existir ou estiver vazia, não tem. Também pode aparecer o aviso “Este iPhone é gerenciado por…” no topo dos Ajustes. Aparelho com MDM precisa ser liberado pela empresa antes da troca.",t:"s",o:[["Sem MDM",0],["Com MDM",20,1]]},
 {k:"orig",l:"Origem do aparelho",t:"s",o:[["Comprado no Brasil",0],["Importado",2]]}]},
 {n:"Acessórios",q:[
 {k:"acc",l:"Marque o que acompanha o aparelho",t:"inc",o:[["Caixa original",2],["Cabo original ou certificado",2],["Carregador (se o modelo trazia na caixa)",2],["Nota fiscal",3],["Capa e película aplicadas",1],["Pino ejetor de SIM",1]]}]}
@@ -107,9 +109,9 @@ const brand=()=>`<div class="top"><span class="brand"><img class="l-light" src="
 const trust=`<div class="trust"><span><b>Transparência</b> em cada detalhe</span><span><b>Procedência</b> aparelhos avaliados</span><span><b>Suporte real</b> no pré e pós-venda</span></div>`;
 const foot=`<p class="foot">Phonew, Goiânia - GO. Instagram @phoneew_</p>`;
 const A={};let step=0;const app=document.getElementById("app");
-const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
 function ok(q){const v=A[q.k];return q.t==="m"||q.t==="inc"||v!==undefined&&v!==""}
-function qHtml(q){const mc=q.t==="m"||q.t==="inc";let h=`<div class="q${mc?" multi":""}"><b>${q.l}</b>${mc?`<span class="tag">Múltipla escolha: marque todas que se aplicam</span>`:""}`;
+function qHtml(q){const mc=q.t==="m"||q.t==="inc";let h=`<div class="q${mc?" multi":""}"><b>${q.l}${q.h?` <button type="button" class="help" data-h="${q.k}" aria-expanded="false" aria-label="Explicar: ${q.l}">?</button>`:""}</b>${q.h?`<div class="hbox" id="h-${q.k}" hidden>${q.h}</div>`:""}${mc?`<span class="tag">Múltipla escolha: marque todas que se aplicam</span>`:""}`;
 if(q.t==="sel"){const opts=q.k==="mod"?MODELS.map(([g,l])=>`<optgroup label="${g}">${l.map(m=>{const v=(m.startsWith("SE")||/^[678]/.test(m)||/ ou /.test(m)?"iPhone ":"iPhone ")+m;return`<option ${A.mod===v?"selected":""}>${v}</option>`}).join("")}</optgroup>`).join(""):q.o.map(o=>`<option ${A[q.k]===o?"selected":""}>${o}</option>`).join("");
 h+=`<select data-k="${q.k}" aria-label="${q.l}"><option value="">Selecione</option>${opts}</select>`}
 else if(q.t==="s")q.o.forEach((o,i)=>h+=`<label class="opt"><input type="radio" name="${q.k}" data-k="${q.k}" value="${i}" ${A[q.k]===i?"checked":""}><span>${o[0]}</span></label>`);
@@ -117,7 +119,7 @@ else q.o.forEach((o,i)=>h+=`<label class="opt"><input type="checkbox" data-k="${
 return h+"</div>"}
 function render(){const s=SEC[step],last=step===SEC.length-1;
 const done=s.q.every(ok);
-app.innerHTML=`${brand()}${step?"":`<div class="hero"><h1>Avalie seu iPhone<br><span class="grad">sem esconder detalhes.</span></h1><p>Responda sobre o estado do aparelho e envie o laudo para a nossa equipe no WhatsApp.</p></div>`}
+app.innerHTML=`${brand()}
 <div class="bar" role="progressbar" aria-valuemin="1" aria-valuemax="${SEC.length}" aria-valuenow="${step+1}"><i style="width:${(step+1)/SEC.length*100}%"></i></div>
 <p class="hint">Etapa ${step+1} de ${SEC.length}</p>
 <div class="key"><span><i></i>Escolha única</span><span><i class="m"></i>Múltipla escolha</span></div>
@@ -131,10 +133,26 @@ else if(el.type==="radio")A[k]=+el.value;else A[k]=el.value;
 const s=SEC[step],d=s.q.every(ok),n=document.getElementById("next");if(n)n.disabled=!d;
 const h=app.querySelector(".card>.hint");if(h)h.style.display=d?"none":""});
 app.addEventListener("click",e=>{const id=e.target.id;
-if(id==="next"){step++<SEC.length-1?render():result()}
+if(id==="next"){step++<SEC.length-1?(track("em andamento"),render()):result()}
 if(id==="back"){step--;render()}
-if(id==="redo"){for(const k in A)delete A[k];step=0;render()}
+if(id==="redo"){for(const k in A)delete A[k];step=0;SID=newId();FIN=false;render()}
 if(id==="copy")copy()});
+const ENDPOINT="https://script.google.com/macros/s/AKfycbz2pgQQxj5d3fgfDQUKz2jpskg0Pun3AgP10TBguRNydmt7QYhERgDReBkrz1iyAYnC/exec";
+const LEAD={nome:"",whats:"",ok:false};let SID="",FIN=false;
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const leadOk=()=>LEAD.nome.trim().length>=2&&LEAD.whats.replace(/\D/g,"").length>=10&&LEAD.ok;
+function answers(){const o=[];SEC.forEach(s=>s.q.forEach(q=>{const v=A[q.k];if(v===undefined)return;o.push(q.l+": "+(q.t==="s"?q.o[v][0]:q.t==="sel"?v:(v||[]).map(i=>q.o[i][0]).join(", ")||"nenhum"))}));return o.join(" | ")}
+function track(status,extra){if(!ENDPOINT||!SID)return;try{fetch(ENDPOINT,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({id:SID,status,nome:LEAD.nome.trim(),whats:LEAD.whats.replace(/\D/g,""),etapa:Math.min(step+1,SEC.length),etapas:SEC.length,modelo:A.mod||"",respostas:answers()},extra||{}))}).catch(()=>{})}catch(e){}}
+function lead(){app.innerHTML=`${brand()}<div class="hero"><h1>Avalie seu iPhone<br><span class="grad">sem esconder detalhes.</span></h1><p>Responda sobre o estado do aparelho e envie o laudo para a nossa equipe no WhatsApp.</p></div>
+<section class="card"><h2>Seus dados</h2><p class="mute">Para enviarmos a avaliação e falarmos com você sobre ela.</p>
+<div class="q"><b><label for="ln">Seu nome</label></b><input id="ln" class="in" autocomplete="name" value="${esc(LEAD.nome)}"></div>
+<div class="q"><b><label for="lw">Seu WhatsApp com DDD</label></b><input id="lw" class="in" type="tel" inputmode="tel" autocomplete="tel" placeholder="(62) 90000-0000" value="${esc(LEAD.whats)}"></div>
+<label class="opt" style="margin-top:16px"><input type="checkbox" id="lc" ${LEAD.ok?"checked":""}><span>Concordo em receber contato da Phonew pelo WhatsApp sobre esta avaliação. Usaremos meus dados só para isso.</span></label>
+<div class="nav"><button class="p" id="go" ${leadOk()?"":"disabled"}>Começar avaliação</button></div></section>${foot}`;window.scrollTo(0,0)}
+app.addEventListener("input",e=>{const el=e.target;if(el.id==="ln")LEAD.nome=el.value;else if(el.id==="lw")LEAD.whats=el.value;else if(el.id==="lc")LEAD.ok=el.checked;else return;const b=document.getElementById("go");if(b)b.disabled=!leadOk()});
+app.addEventListener("click",e=>{if(e.target.id==="go"&&leadOk()){SID=newId();FIN=false;step=0;track("em andamento");render()}});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"&&SID&&!FIN)track("em andamento")});
+app.addEventListener("click",e=>{const b=e.target.closest(".help");if(!b)return;const x=document.getElementById("h-"+b.dataset.h);x.hidden=!x.hidden;b.setAttribute("aria-expanded",String(!x.hidden))});
 let REPORT="";const WA="5562983377540";
 function calc(){const L=[],C=[],T=SEC.map(()=>0);
 SEC.forEach((s,si)=>s.q.forEach(q=>{const v=A[q.k];
@@ -148,7 +166,7 @@ if(sc>=80)return["Muito bom · Classe A","var(--ok)","Seminovo em ótimo estado,
 if(sc>=65)return["Bom · Classe B","var(--mid)","Funcional, com desgaste ou ressalvas a informar no anúncio."];
 if(sc>=45)return["Regular · Classe C","var(--mid)","Usado com detalhes relevantes. Precifique com desconto e seja transparente."];
 return["Revisão necessária · Classe D","var(--bad)","Recomendado reparo antes da venda ou negociação como peças."]}
-function result(){const r=calc(),g=grade(r.score,r.C.length),C=2*Math.PI*52;
+function result(){const r=calc(),g=grade(r.score,r.C.length),C=2*Math.PI*52;FIN=true;track("concluído",{nota:r.score,conservacao:r.cons,classe:g[0],alertas:r.C.join("; ")});
 const mod=A.mod+" · "+A.arm;
 REPORT=`LAUDO DE AVALIAÇÃO PHONEW\n${mod}\nNota: ${r.score}/100 — ${g[0]}\nConservação: ${r.cons}/100\n`+(r.C.length?`\nALERTAS CRÍTICOS:\n${r.C.map(c=>"- "+c).join("\n")}\n`:"")+`\nPONTOS DE ATENÇÃO:\n`+(r.L.length?r.L.map(x=>`- ${x[1]} (-${x[2]})`).join("\n"):"- Nenhum")+`\n\nGarantia Apple: ${SEC[3].q[0].o[A.gar][0]}`+(A.icl===0?"\nLembrete: remover o iCloud e desativar o Buscar iPhone com o cliente na entrega.":"");
 app.innerHTML=`${brand()}<h1 style="margin-top:40px">Laudo do aparelho</h1><p class="mute">${esc(mod)}</p>
@@ -157,14 +175,14 @@ app.innerHTML=`${brand()}<h1 style="margin-top:40px">Laudo do aparelho</h1><p cl
 <section class="card"><h2>Estado de conservação</h2><div class="sec"><div><span>Nota de conservação (peso de 65% na nota geral)</span><span>${r.cons}/100</span></div><div class="bar"><i style="width:${r.cons}%;background:${r.cons>=80?"var(--ok)":r.cons>=55?"var(--mid)":"var(--bad)"}"></i></div></div></section>
 ${r.C.length?`<section class="card"><h2>Alertas críticos</h2>${r.C.map(c=>`<div class="alert">${esc(c)}</div>`).join("")}</section>`:""}
 <section class="card"><h2>Pontos perdidos por etapa</h2><div class="sec">${SEC.map((s,i)=>`<div><span>${s.n}</span><span>-${r.T[i]}</span></div><div class="bar"><i style="width:${Math.min(100,r.T[i])}%"></i></div>`).join("")}</div></section>
-${A.icl===0?`<div class="note">Lembrete: na entrega, remover o iCloud do cliente e desativar o Buscar iPhone antes de concluir a troca.</div>`:""}<section class="card"><h2>Pontos de atenção</h2>${r.L.length?r.L.map(x=>`<div class="row"><span>${esc(x[1])}</span><b>-${x[2]}</b></div>`).join(""):`<p class="mute">Nenhum ponto de atenção. Aparelho sem desconto.</p>`}</section>
-<a class="btn" id="wa" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent("Olá! Fiz a avaliação do meu iPhone:\n\n"+REPORT)}">Enviar avaliação para a equipe Phonew</a>
+${A.icl===0?`<div class="note">Lembrete: na entrega, remover o seu iCloud e desativar o Buscar iPhone antes de concluir a troca.</div>`:""}<section class="card"><h2>Pontos de atenção</h2>${r.L.length?r.L.map(x=>`<div class="row"><span>${esc(x[1])}</span><b>-${x[2]}</b></div>`).join(""):`<p class="mute">Nenhum ponto de atenção. Aparelho sem desconto.</p>`}</section>
+<a class="btn" id="wa" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent("Olá! Sou "+LEAD.nome.trim()+". Fiz a avaliação do meu iPhone:\n\n"+REPORT)}">Enviar avaliação para a equipe Phonew</a>
 <div class="nav"><button id="redo">Nova avaliação</button><button class="p" id="copy">Copiar laudo</button></div><div id="out"></div>${foot}`;
 window.scrollTo(0,0)}
 function copy(){const b=document.getElementById("copy"),o=document.getElementById("out");
 const show=()=>{o.innerHTML=`<textarea readonly>${esc(REPORT)}</textarea>`;o.querySelector("textarea").select()};
 try{navigator.clipboard.writeText(REPORT).then(()=>{b.textContent="Laudo copiado"},show)}catch(e){show()}}
-render();
+lead();
 </script>
 </body>
 </html>
